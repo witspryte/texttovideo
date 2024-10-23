@@ -55,7 +55,7 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
         text_clip = TextClip(txt=text, fontsize=100, color="yellow", stroke_width=2, stroke_color="white", method="label")
         text_clip = text_clip.set_start(t1)
         text_clip = text_clip.set_end(t2)
-        text_clip = text_clip.set_position(["bottom", 800])
+        text_clip = text_clip.set_position(["center", 800])
         visual_clips.append(text_clip)
 
     video = CompositeVideoClip(visual_clips)
