@@ -27,15 +27,15 @@ def getBestVideo(query_string, orientation_landscape=True, used_vids=[]):
     vids = search_videos(query_string, orientation_landscape)
     videos = vids['videos']  # Extract the videos list from JSON
 
-    # Only accept videos with EXACT 9:16 aspect ratio and resolution of 1080x1920
+    # Filter videos for portrait orientation with exact 1080x1920 resolution (aspect ratio 9:16)
     if not orientation_landscape:
         filtered_videos = [video for video in videos
                            if video['width'] == 1080 and video['height'] == 1920
-                           and abs((video['height'] / video['width']) - (16/9)) < 0.001]  # Strict ratio check
+                           and abs(video['height'] / video['width'] - 16/9) < 0.01]  # Allowing for floating-point precision
     else:
         filtered_videos = [video for video in videos
                            if video['width'] == 1920 and video['height'] == 1080
-                           and abs((video['width'] / video['height']) - (16/9)) < 0.001]
+                           and abs(video['width'] / video['height'] - 16/9) < 0.01]
 
     # Sort the filtered videos by duration in ascending order (closest to 15 seconds)
     sorted_videos = sorted(filtered_videos, key=lambda x: abs(15 - int(x['duration'])))
@@ -75,3 +75,4 @@ def generate_video_url(timed_video_searches, video_server):
         timed_video_urls = get_images_for_video(timed_video_searches)
 
     return timed_video_urls
+
