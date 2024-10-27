@@ -5,6 +5,7 @@ from utility.utils import log_response, LOG_TYPE_PEXEL
 PEXELS_API_KEY = os.environ.get('PEXELS_KEY')
 
 def search_videos(query_string, orientation_landscape=True):
+    # Update the Pexels API call to include portrait orientation
     url = "https://api.pexels.com/videos/search"
     headers = {
         "Authorization": PEXELS_API_KEY,
@@ -12,7 +13,7 @@ def search_videos(query_string, orientation_landscape=True):
     }
     params = {
         "query": query_string,
-        "orientation": "portrait" if not orientation_landscape else "landscape",
+        "orientation": "portrait" if not orientation_landscape else "landscape",  # Change to portrait if needed
         "per_page": 15
     }
 
@@ -27,15 +28,11 @@ def getBestVideo(query_string, orientation_landscape=True, used_vids=[]):
     vids = search_videos(query_string, orientation_landscape)
     videos = vids['videos']  # Extract the videos list from JSON
 
-    # Filter videos for portrait orientation with exact 1080x1920 resolution (aspect ratio 9:16)
-    if not orientation_landscape:
-        filtered_videos = [video for video in videos
-                           if video['width'] == 1080 and video['height'] == 1920
-                           and abs(video['height'] / video['width'] - 16/9) < 0.01]  # Allowing for floating-point precision
-    else:
-        filtered_videos = [video for video in videos
-                           if video['width'] == 1920 and video['height'] == 1080
-                           and abs(video['width'] / video['height'] - 16/9) < 0.01]
+    # Filter and extract videos for portrait orientation (1080x1920)
+    if not orientation_landscape:  # Check if searching for portrait orientation
+        filtered_videos = [video for video in videos if video['width'] >= 1080 and video['height'] >= 1920 and video['height']/video['width'] == 16/9]
+    else:  # Landscape filtering
+        filtered_videos = [video for video in videos if video['width'] >= 1920 and video['height'] >= 1080 and video['width']/video['height'] == 16/9]
 
     # Sort the filtered videos by duration in ascending order (closest to 15 seconds)
     sorted_videos = sorted(filtered_videos, key=lambda x: abs(15 - int(x['duration'])))
@@ -54,7 +51,7 @@ def getBestVideo(query_string, orientation_landscape=True, used_vids=[]):
                     if not (video_file['link'].split('.hd')[0] in used_vids):
                         return video_file['link']
 
-    print("No full-size portrait videos found for this search query:", query_string)
+    print("No portrait links found for this round of search with query:", query_string)
     return None
 
 
