@@ -75,4 +75,3 @@ def generate_video_url(timed_video_searches, video_server):
         timed_video_urls = get_images_for_video(timed_video_searches)
 
     return timed_video_urls
-
