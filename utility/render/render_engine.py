@@ -24,6 +24,7 @@ def search_program(program_name):
 
 def get_program_path(program_name):
     program_path = search_progimport
+import os
 import tempfile
 from moviepy.editor import VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
 
@@ -83,8 +84,7 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
         os.remove(video_filename)
 
     return OUTPUT_FILE_NAME
-ram(program_name)
-    return program_path
+
 
 
 """def get_output_media(audio_file_path, timed_captions, background_video_data, video_server):
