@@ -25,10 +25,8 @@ def search_program(program_name):
 def get_program_path(program_name):
     program_path = search_program(program_name)
     return program_path
-import os
-import tempfile
-import time
-from moviepy.editor import VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
+
+
 
 def get_output_media(audio_file_path, timed_captions, background_video_data, video_server):
     OUTPUT_FILE_NAME = "rendered_video.mp4"
