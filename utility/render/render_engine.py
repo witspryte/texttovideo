@@ -27,6 +27,7 @@ def get_program_path(program_name):
     return program_path
 import os
 import tempfile
+import time
 from moviepy.editor import VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
 
 def get_output_media(audio_file_path, timed_captions, background_video_data, video_server):
@@ -47,14 +48,23 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
         video_filename = tempfile.NamedTemporaryFile(delete=False).name
         download_file(video_url, video_filename)
         
+        # Verify the video file downloaded correctly
+        if not os.path.exists(video_filename) or os.path.getsize(video_filename) == 0:
+            print(f"Skipping missing or empty video file: {video_filename}")
+            continue  # Skip to the next video
+
+        # Attempt to load the video file
         try:
-            # Create VideoFileClip from the downloaded file
             video_clip = VideoFileClip(video_filename)
             video_clip = video_clip.set_start(t1).set_end(t2)
             visual_clips.append(video_clip)
+            print(f"Video file added: {video_filename}")
         except OSError:
-            print(f"Skipping corrupted or unreadable video file: {video_filename}")
-            continue  # Skip to the next video clip
+            print(f"Skipping unreadable video file: {video_filename}")
+            continue  # Skip to the next file
+
+        # Optional delay to avoid rapid requests to the server
+        time.sleep(0.2)  # 200 ms delay
 
     # Process audio clips
     audio_clips = []
@@ -68,8 +78,12 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
         visual_clips.append(text_clip)
 
     # Combine visual clips
-    video = CompositeVideoClip(visual_clips)
-    
+    if visual_clips:
+        video = CompositeVideoClip(visual_clips)
+    else:
+        print("No visual clips available. The video will only contain audio.")
+        return None
+
     # Combine audio clips if available
     if audio_clips:
         audio = CompositeAudioClip(audio_clips)
@@ -85,6 +99,7 @@ def get_output_media(audio_file_path, timed_captions, background_video_data, vid
         os.remove(video_filename)
 
     return OUTPUT_FILE_NAME
+
 
 
 
