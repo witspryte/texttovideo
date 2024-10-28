@@ -24,7 +24,7 @@ def search_program(program_name):
 
 def get_program_path(program_name):
     program_path = search_program(program_name)
-    return program_pat
+    return program_path
 import os
 import tempfile
 from moviepy.editor import VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
